@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app/auth/auth_cubit.dart';
 import 'package:social_media_app/auth/auth_repository.dart';
 import 'package:social_media_app/auth/form_submission_status.dart';
 import 'package:social_media_app/auth/login/login_bloc.dart';
@@ -19,12 +20,13 @@ class LoginView extends StatelessWidget {
       body: BlocProvider(
         create: (context) => LoginBloc(
           authRepo: context.read<AuthRepository>(),
+          authCubit: context.read<AuthCubit>(),
         ),
         child: Stack(
           alignment: Alignment.bottomCenter,
           children: [
             _loginForm(),
-            _showSignUpButton()
+            _showSignUpButton(context)
           ],
         ),
       ),
@@ -110,11 +112,11 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _showSignUpButton() {
+  Widget _showSignUpButton(BuildContext context) {
     return SafeArea(
       child: TextButton(
         child: const Text('Don\'t have an account? Sign up.'),
-        onPressed: () {},
+        onPressed: () => context.read<AuthCubit>().showSignUp(),
       ),
     );
   }

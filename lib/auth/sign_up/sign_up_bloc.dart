@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_media_app/auth/auth_cubit.dart';
 import 'package:social_media_app/auth/auth_repository.dart';
 import 'package:social_media_app/auth/form_submission_status.dart';
 import 'package:social_media_app/auth/sign_up/sign_up_event.dart';
@@ -6,8 +7,12 @@ import 'package:social_media_app/auth/sign_up/sign_up_state.dart';
 
 class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
   final AuthRepository authRepo;
+  final AuthCubit authCubit;
 
-  SignUpBloc({required this.authRepo}) : super(SignUpState());
+  SignUpBloc({
+    required this.authRepo,
+    required this.authCubit,
+  }) : super(SignUpState());
 
   @override
   Stream<SignUpState> mapEventToState(SignUpEvent event) async* {
@@ -28,8 +33,18 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
       yield state.copyWith(formStatus: FormSubmitting());
 
       try {
-        await authRepo.login();
+        await authRepo.signUp(
+          username: state.username,
+          email: state.email,
+          password: state.password,
+        );
         yield state.copyWith(formStatus: SubmissionSuccess());
+
+        authCubit.showConfirmSignUp(
+          username: state.username,
+          email: state.email,
+          password: state.password,
+        );
       } on Exception catch (e) {
         yield state.copyWith(formStatus: SubmissionFailed(exception: e));
       }
